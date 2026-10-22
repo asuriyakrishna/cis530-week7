@@ -1,0 +1,12 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Launch cis530-week7",
+      "request": "launch",
+      "mainClass": "edu.bellevue.cis530.week7.Cis530Week7Application",
+      "projectName": "cis530-week7"
+    }
+  ]
+}
