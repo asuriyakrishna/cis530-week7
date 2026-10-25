@@ -43,7 +43,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/api/students/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/students/**").hasRole("ADMIN")
                         .anyRequest().authenticated())
-                .formLogin(Customizer.withDefaults());
+                .formLogin(Customizer.withDefaults())
+                .oauth2Login(Customizer.withDefaults());
         return http.build();
     }
 }
