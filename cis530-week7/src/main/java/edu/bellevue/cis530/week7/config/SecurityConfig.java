@@ -1,6 +1,7 @@
 package edu.bellevue.cis530.week7.config;
 
 import edu.bellevue.cis530.week7.security.CustomUserDetailsService;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -9,7 +10,9 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
@@ -34,8 +37,10 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http,
+                                                 ObjectProvider<ClientRegistrationRepository> clientRegistrationRepository) throws Exception {
         http
+                .csrf(AbstractHttpConfigurer::disable)
                 .authenticationProvider(authenticationProvider())
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(HttpMethod.GET, "/api/students/**").hasAnyRole("ADMIN", "USER")
@@ -44,6 +49,11 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/api/students/**").hasRole("ADMIN")
                         .anyRequest().authenticated())
                 .formLogin(Customizer.withDefaults());
+
+        if (clientRegistrationRepository.getIfAvailable() != null) {
+            http.oauth2Login(Customizer.withDefaults());
+        }
+
         return http.build();
     }
 }
